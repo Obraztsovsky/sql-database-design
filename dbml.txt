@@ -1,0 +1,289 @@
+// Концептуальная модель
+Table clients {
+  client_id integer [pk]
+  clients_properties ""
+}
+
+Table agreements {
+  agreement_id integer [pk]
+  agreements_properties ""
+}
+
+Table financial_products {
+  product_id integer [pk]
+  financial_products_properties ""
+}
+
+Table financial_instruments {
+  instrument_id integer [pk]
+  financial_instruments_properties ""
+}
+
+Table transactions {
+  transaction_id integer [pk]
+  transactions_properties ""
+}
+
+Table transaction_categories {
+  category_id integer [pk]
+  transaction_categories_properties ""
+}
+
+Table counterparties {
+  counterparty_id integer [pk]
+  counterparties_properties ""
+}
+
+Table channels {
+  channel_id integer [pk]
+  channels_properties ""
+}
+
+Table marketing_campaigns {
+  campaign_id integer [pk]
+  marketing_campaigns_properties ""
+}
+
+Table client_offers {
+  offer_id integer [pk]
+  client_offers_properties ""
+
+}
+
+Table interaction_events {
+  event_id integer [pk]
+  interaction_events_properties ""
+}
+
+Table employees {
+  employee_id integer [pk]
+  employees_properties ""
+}
+
+Table applications {
+  application_id integer [pk]
+  applications_properties ""
+}
+
+Table balance_snapshots {
+  snapshot_id integer [pk]
+  balance_snapshots_properties ""
+  
+}
+
+Table client_snapshots {
+  client_snapshot_id integer [pk]
+  client_snapshots_properties "" 
+  
+}
+
+
+Table instrument_transaction_categories {
+  instrument_id integer 
+  instrument_transaction_properties "" 
+  
+}
+
+Ref: "instrument_transaction_categories"."instrument_id" < "financial_instruments"."instrument_id"
+
+Ref: "clients"."client_id" < "client_snapshots"."client_snapshots_properties"
+
+Ref: "clients"."client_id" < "client_offers"."client_offers_properties"
+
+Ref: "clients"."client_id" < "interaction_events"."interaction_events_properties"
+
+Ref: "channels"."channel_id" < "interaction_events"."interaction_events_properties"
+
+Ref: "marketing_campaigns"."campaign_id" < "client_offers"."client_offers_properties"
+
+Ref: "clients"."client_id" < "agreements"."agreements_properties"
+
+Ref: "employees"."employee_id" < "applications"."applications_properties"
+
+Ref: "clients"."client_id" < "applications"."applications_properties"
+
+Ref: "agreements"."agreement_id" < "financial_instruments"."financial_instruments_properties"
+
+Ref: "financial_products"."product_id" < "financial_instruments"."financial_instruments_properties"
+
+Ref: "financial_products"."product_id" < "applications"."applications_properties"
+
+Ref: "financial_instruments"."instrument_id" < "balance_snapshots"."balance_snapshots_properties"
+
+Ref: "transaction_categories"."category_id" < "instrument_transaction_categories"."instrument_transaction_properties"
+
+Ref: "counterparties"."counterparty_id" < "transactions"."transactions_properties"
+
+Ref: "financial_instruments"."instrument_id" < "transactions"."transaction_id"
+
+
+
+//логическая модель
+Table clients {
+  client_id integer [pk]
+  client_type varchar(10)
+  tax_id varchar(20)
+  full_name varchar(255)
+  registration_date date
+  segment varchar(50) 
+  status varchar(20) 
+  created_at timestamp
+  email varchar(255)
+  phone varchar(12)
+}
+
+Table agreements {
+  agreement_id integer [pk]
+  client_id integer [ref: > clients.client_id]
+  agreement_number varchar(50)
+  agreement_type varchar(50) 
+  start_date date
+  end_date date
+  status varchar(20)
+  created_at timestamp
+}
+
+Table financial_products {
+  product_id integer [pk]
+  product_code varchar(20)
+  product_name varchar(100)
+  product_type varchar(30) 
+  category varchar(50) 
+  is_active boolean
+  description text
+}
+
+Table financial_instruments {
+  instrument_id integer [pk]
+  agreement_id integer [ref: > agreements.agreement_id]
+  product_id integer [ref: > financial_products.product_id]
+  instrument_number varchar(50) 
+  currency varchar(3)
+  opening_date date
+  closing_date date
+  current_balance decimal(15,2)
+  status varchar(20) 
+  instrument_details json 
+}
+
+Table transactions {
+  transaction_id integer [pk]
+  instrument_id integer [ref: > financial_instruments.instrument_id]
+  operation_date timestamp
+  value_date date 
+  amount decimal(15,2)
+  currency varchar(3)
+  transaction_type varchar(20) 
+  description varchar(500)
+  counterparty_info varchar(255) 
+  mcc_code varchar(4) 
+  status varchar(20) 
+  parent_transaction_id integer [ref: > transactions.transaction_id]
+  counterparty_id integer [ref: > counterparties.counterparty_id, null]
+}
+
+Table transaction_categories {
+  category_id integer [pk]
+  mcc_code varchar(4)
+  category_name varchar(100)
+  is_business_expense boolean
+}
+
+Table counterparties {
+  counterparty_id integer [pk]
+  counterparty_type varchar(20) 
+  tax_id varchar(20)
+  name varchar(255)
+  bank_bic varchar(9) 
+  account_number varchar(34)
+  category varchar(100)
+}
+
+Table channels {
+  channel_id integer [pk]
+  channel_name varchar(50) 
+  channel_type varchar(20) 
+  is_active boolean
+}
+
+Table marketing_campaigns {
+  campaign_id integer [pk]
+  campaign_name varchar(100)
+  campaign_type varchar(30) 
+  start_date date
+  end_date date
+  target_segment varchar(50)
+  status varchar(20)
+  budget decimal(15,2)
+}
+
+Table client_offers {
+  offer_id integer [pk]
+  client_id integer [ref: > clients.client_id]
+  campaign_id integer [ref: > marketing_campaigns.campaign_id]
+  offer_date date
+  offer_status varchar(20) 
+  acceptance_date date
+  conversion_value decimal(15,2)
+}
+
+Table interaction_events {
+  event_id integer [pk]
+  client_id integer [ref: > clients.client_id]
+  channel_id integer [ref: > channels.channel_id]
+  event_type varchar(50) 
+  event_timestamp timestamp
+  session_id varchar(100)
+  device_type varchar(50)
+  ip_address varchar(45)
+  duration_seconds integer 
+}
+
+Table employees {
+  employee_id integer [pk]
+  department varchar(100)
+  role varchar(50) 
+  is_active boolean
+}
+
+Table applications {
+  application_id integer [pk]
+  client_id integer [ref: > clients.client_id]
+  product_id integer [ref: > financial_products.product_id]
+  employee_id integer [ref: > employees.employee_id, null]
+  application_date timestamp
+  application_type varchar(50) 
+  status varchar(30) 
+  decision_date timestamp
+  decision_reason text
+  requested_amount decimal(15,2)
+  approved_amount decimal(15,2) 
+}
+
+Table balance_snapshots {
+  snapshot_id integer [pk]
+  instrument_id integer [ref: > financial_instruments.instrument_id]
+  snapshot_date date
+  closing_balance decimal(15,2)
+  average_balance decimal(15,2)
+  min_balance decimal(15,2)
+  max_balance decimal(15,2)
+}
+
+Table client_snapshots {
+  client_snapshot_id integer [pk]
+  client_id integer [ref: > clients.client_id]
+  snapshot_date date
+  total_balance decimal(15,2)
+  active_products_count integer
+  monthly_turnover decimal(15,2)
+  segment varchar(50)
+}
+
+
+Table instrument_transaction_categories {
+  instrument_id integer [ref: > financial_instruments.instrument_id, pk]
+  category_id integer [ref: > transaction_categories.category_id, pk]
+  monthly_limit decimal(15,2) [null]
+  actual_monthly_spend decimal(15,2)
+}
