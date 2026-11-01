@@ -29,7 +29,7 @@
 База данных спроектирована с соблюдением требований 3-й нормальной формы (3NF).
 
 ### Концептуальная модель
-![Logical ER Diagram](docs/conceptual_model.png)
+![Conceptual Diagram](docs/conceptual_model.png)
 
 ### Логическая модель (ER-диаграмма)
 ![Logical ER Diagram](docs/logical_model.png)
