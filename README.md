@@ -29,10 +29,10 @@
 База данных спроектирована с соблюдением требований 3-й нормальной формы (3NF).
 
 ### Концептуальная модель
-![Conceptual Diagram](docs/conceptual_model.png)
+![Conceptual Diagram](Концептуальная_модель.png)
 
 ### Логическая модель (ER-диаграмма)
-![Logical ER Diagram](docs/logical_model.png)
+![Logical ER Diagram](Логическая_модель.png)
 
 ### Основные сущности:
 * `clients` & `agreements` — договоры и профили клиентов.
